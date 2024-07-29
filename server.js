@@ -13,7 +13,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// 데이터 로드
 async function loadPosts() {
   try {
     const data = await fs.readFile(DATA_FILE, 'utf8');
@@ -23,7 +22,6 @@ async function loadPosts() {
   }
 }
 
-// 데이터 저장
 async function savePosts(posts) {
   await fs.writeFile(DATA_FILE, JSON.stringify(posts, null, 2), 'utf8');
 }
