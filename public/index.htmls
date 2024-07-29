@@ -1,1 +1,35 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blog</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to My Blog</h1>
+    </header>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+    </nav>
+    <div class="container">
+        <button id="newPostButton">New Post</button>
+        <form id="blogForm" style="display: none;">
+            <input type="text" id="username" placeholder="Username">
+            <input type="text" id="title" placeholder="Title" required>
+            <textarea id="content" placeholder="Content" rows="5" required></textarea>
+            <button type="submit">Add Post</button>
+        </form>
+        <div id="posts">
+            <!-- Posts will be loaded here -->
+        </div>
+    </div>
+    <footer>
+        &copy; 2024 My Blog. All rights reserved.
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
