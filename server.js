@@ -1,26 +1,46 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const fs = require('fs-extra');
+const path = require('path');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-let posts = [];
+const DATA_FILE = path.join(__dirname, 'data.json');
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-app.get('/api/posts', (req, res) => {
+// 데이터 로드
+async function loadPosts() {
+  try {
+    const data = await fs.readFile(DATA_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    return [];
+  }
+}
+
+// 데이터 저장
+async function savePosts(posts) {
+  await fs.writeFile(DATA_FILE, JSON.stringify(posts, null, 2), 'utf8');
+}
+
+app.get('/api/posts', async (req, res) => {
+  const posts = await loadPosts();
   res.json(posts);
 });
 
-app.post('/api/posts', (req, res) => {
+app.post('/api/posts', async (req, res) => {
+  const posts = await loadPosts();
   const post = req.body;
   posts.push(post);
+  await savePosts(posts);
   res.status(201).json(post);
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });
