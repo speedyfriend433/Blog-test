@@ -4,73 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Blog</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 1em 0;
-            text-align: center;
-        }
-        nav {
-            background-color: #444;
-            padding: 1em;
-            text-align: center;
-        }
-        nav a {
-            color: #fff;
-            margin: 0 1em;
-            text-decoration: none;
-        }
-        .container {
-            padding: 2em;
-        }
-        .post {
-            margin-bottom: 2em;
-            padding: 1em;
-            border: 1px solid #ddd;
-        }
-        .post h2 {
-            color: #333;
-        }
-        .post p {
-            line-height: 1.6;
-        }
-        .post .time {
-            color: #888;
-            font-size: 0.9em;
-        }
-        footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 1em 0;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
-        }
-        form {
-            margin-bottom: 2em;
-        }
-        form input, form textarea {
-            display: block;
-            width: 100%;
-            margin-bottom: 1em;
-            padding: 0.5em;
-            border: 1px solid #ddd;
-        }
-        form button {
-            padding: 0.5em 1em;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
@@ -88,70 +22,11 @@
             <button type="submit">Add Post</button>
         </form>
         <div id="posts">
-            <!-- Posts will be loaded here -->
         </div>
     </div>
     <footer>
         &copy; 2024 My Blog. All rights reserved.
     </footer>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            loadPosts();
-        });
-
-        document.getElementById('blogForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            var title = document.getElementById('title').value;
-            var content = document.getElementById('content').value;
-            var currentDate = new Date();
-            var timeString = currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString();
-
-            var post = {
-                title: title,
-                content: content,
-                time: timeString
-            };
-
-            savePost(post);
-            addPostToPage(post);
-
-            document.getElementById('blogForm').reset();
-        });
-
-        function savePost(post) {
-            var posts = JSON.parse(localStorage.getItem('posts')) || [];
-            posts.push(post);
-            localStorage.setItem('posts', JSON.stringify(posts));
-        }
-
-        function loadPosts() {
-            var posts = JSON.parse(localStorage.getItem('posts')) || [];
-            posts.forEach(function(post) {
-                addPostToPage(post);
-            });
-        }
-
-        function addPostToPage(post) {
-            var postContainer = document.createElement('div');
-            postContainer.className = 'post';
-
-            var postTitle = document.createElement('h2');
-            postTitle.textContent = post.title;
-
-            var postTime = document.createElement('p');
-            postTime.className = 'time';
-            postTime.textContent = 'Posted on ' + post.time;
-
-            var postContent = document.createElement('p');
-            postContent.textContent = post.content;
-
-            postContainer.appendChild(postTitle);
-            postContainer.appendChild(postTime);
-            postContainer.appendChild(postContent);
-
-            document.getElementById('posts').appendChild(postContainer);
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
