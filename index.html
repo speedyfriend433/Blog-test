@@ -53,6 +53,23 @@
             width: 100%;
             bottom: 0;
         }
+        form {
+            margin-bottom: 2em;
+        }
+        form input, form textarea {
+            display: block;
+            width: 100%;
+            margin-bottom: 1em;
+            padding: 0.5em;
+            border: 1px solid #ddd;
+        }
+        form button {
+            padding: 0.5em 1em;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -65,24 +82,62 @@
         <a href="#">Contact</a>
     </nav>
     <div class="container">
-        <div class="post">
-            <h2>First Blog Post</h2>
-            <p class="time">Posted on July 29, 2024 at 10:00 AM</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.</p>
-        </div>
-        <div class="post">
-            <h2>Second Blog Post</h2>
-            <p class="time">Posted on July 29, 2024 at 11:00 AM</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.</p>
-        </div>
-        <div class="post">
-            <h2>Third Blog Post</h2>
-            <p class="time">Posted on July 29, 2024 at 12:00 PM</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.</p>
+        <form id="blogForm">
+            <input type="text" id="title" placeholder="Title" required>
+            <textarea id="content" placeholder="Content" rows="5" required></textarea>
+            <button type="submit">Add Post</button>
+        </form>
+        <div id="posts">
+            <div class="post">
+                <h2>First Blog Post</h2>
+                <p class="time">Posted on July 29, 2024 at 10:00 AM</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.</p>
+            </div>
+            <div class="post">
+                <h2>Second Blog Post</h2>
+                <p class="time">Posted on July 29, 2024 at 11:00 AM</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.</p>
+            </div>
+            <div class="post">
+                <h2>Third Blog Post</h2>
+                <p class="time">Posted on July 29, 2024 at 12:00 PM</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.</p>
+            </div>
         </div>
     </div>
     <footer>
         &copy; 2024 My Blog. All rights reserved.
     </footer>
+    <script>
+        document.getElementById('blogForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var title = document.getElementById('title').value;
+            var content = document.getElementById('content').value;
+            var currentDate = new Date();
+            var timeString = currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString();
+
+            var postContainer = document.createElement('div');
+            postContainer.className = 'post';
+
+            var postTitle = document.createElement('h2');
+            postTitle.textContent = title;
+
+            var postTime = document.createElement('p');
+            postTime.className = 'time';
+            postTime.textContent = 'Posted on ' + timeString;
+
+            var postContent = document.createElement('p');
+            postContent.textContent = content;
+
+            postContainer.appendChild(postTitle);
+            postContainer.appendChild(postTime);
+            postContainer.appendChild(postContent);
+
+            document.getElementById('posts').appendChild(postContainer);
+
+            document.getElementById('blogForm').reset();
+        });
+    </script>
 </body>
 </html>
