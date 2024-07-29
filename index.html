@@ -16,12 +16,15 @@
         <a href="#">Contact</a>
     </nav>
     <div class="container">
-        <form id="blogForm">
+        <button id="newPostButton">New Post</button>
+        <form id="blogForm" style="display: none;">
+            <input type="text" id="username" placeholder="Username">
             <input type="text" id="title" placeholder="Title" required>
             <textarea id="content" placeholder="Content" rows="5" required></textarea>
             <button type="submit">Add Post</button>
         </form>
         <div id="posts">
+            <!-- Posts will be loaded here -->
         </div>
     </div>
     <footer>
