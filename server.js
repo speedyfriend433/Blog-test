@@ -2,18 +2,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Sequelize, DataTypes } = require('sequelize');
-
+const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
-
-// SQLite 데이터베이스 설정
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: './database.sqlite', // 데이터베이스 파일 경로
-  logging: false // 디버깅을 위해 로그를 비활성화할 수 있습니다.
+  storage: path.join(__dirname, 'database.sqlite'), 
+  logging: false 
 });
 
-// Post 모델 정의
 const Post = sequelize.define('Post', {
   username: {
     type: DataTypes.STRING,
@@ -55,7 +52,6 @@ const Comment = sequelize.define('Comment', {
   }
 });
 
-// 데이터베이스 초기화
 sequelize.sync()
   .then(() => console.log('Database synced'))
   .catch(err => console.error('Failed to sync database:', err));
