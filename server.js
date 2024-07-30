@@ -31,7 +31,6 @@ const Post = sequelize.define('Post', {
   }
 });
 
-// Comment 모델 정의
 const Comment = sequelize.define('Comment', {
   postId: {
     type: DataTypes.INTEGER,
