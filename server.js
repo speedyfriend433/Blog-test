@@ -1,42 +1,65 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const fs = require('fs-extra');
-const path = require('path');
-
+const { Sequelize, DataTypes } = require('sequelize');
 const app = express();
 const port = process.env.PORT || 3000;
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: './database.sqlite'
+});
 
-const DATA_FILE = path.join(__dirname, 'data.json');
+const Post = sequelize.define('Post', {
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'undefined'
+  },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  content: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  time: {
+    type: DataTypes.STRING,
+    allowNull: false
+  }
+});
+
+sequelize.sync()
+  .then(() => console.log('Database synced'))
+  .catch(err => console.error('Failed to sync database:', err));
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-async function loadPosts() {
-  try {
-    const data = await fs.readFile(DATA_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
-    return [];
-  }
-}
-
-async function savePosts(posts) {
-  await fs.writeFile(DATA_FILE, JSON.stringify(posts, null, 2), 'utf8');
-}
-
 app.get('/api/posts', async (req, res) => {
-  const posts = await loadPosts();
-  res.json(posts);
+  try {
+    const posts = await Post.findAll();
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to load posts' });
+  }
 });
 
 app.post('/api/posts', async (req, res) => {
-  const posts = await loadPosts();
-  const post = req.body;
-  posts.push(post);
-  await savePosts(posts);
-  res.status(201).json(post);
+  const { username, title, content, time } = req.body;
+
+  try {
+    const newPost = await Post.create({
+      username,
+      title,
+      content,
+      time
+    });
+    res.status(201).json(newPost);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to save post' });
+  }
 });
 
 app.listen(port, () => {
