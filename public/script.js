@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 let isAuthenticated = false;
+let isAdmin = false;
 
 function checkAuthStatus() {
     fetch('/api/checkAuth', {
@@ -31,15 +32,17 @@ function checkAuthStatus() {
     .then(data => {
         if (data.isAuthenticated) {
             isAuthenticated = true;
+            isAdmin = data.username === 'admin';
             document.getElementById('loginLink').style.display = 'none';
             document.getElementById('registerLink').style.display = 'none';
             document.getElementById('logoutLink').style.display = 'block';
             document.getElementById('newPostButton').style.display = 'block';
-            if (data.username === 'admin') {
+            if (isAdmin) {
                 document.getElementById('adminActions').style.display = 'block';
             }
         } else {
             isAuthenticated = false;
+            isAdmin = false;
             document.getElementById('loginLink').style.display = 'block';
             document.getElementById('registerLink').style.display = 'block';
             document.getElementById('logoutLink').style.display = 'none';
@@ -86,11 +89,12 @@ function handleLogin(event) {
     .then(data => {
         if (data.message === 'Login successful') {
             isAuthenticated = true;
+            isAdmin = username === 'admin';
             document.getElementById('loginLink').style.display = 'none';
             document.getElementById('registerLink').style.display = 'none';
             document.getElementById('logoutLink').style.display = 'block';
             document.getElementById('newPostButton').style.display = 'block';
-            if (username === 'admin') {
+            if (isAdmin) {
                 document.getElementById('adminActions').style.display = 'block';
             }
             showHome();
@@ -141,6 +145,7 @@ function handleLogout(event) {
     .then(data => {
         if (data.message === 'Logout successful') {
             isAuthenticated = false;
+            isAdmin = false;
             document.getElementById('loginLink').style.display = 'block';
             document.getElementById('registerLink').style.display = 'block';
             document.getElementById('logoutLink').style.display = 'none';
@@ -159,9 +164,7 @@ function handleLogout(event) {
 function handleNewPost(event) {
     event.preventDefault();
     const title = document.getElementById('title').value;
-    const content = document.getElementById('content').value;
-
-    fetch('/api/posts', {
+    const content = document.getElementById('content').value;    fetch('/api/posts', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -261,6 +264,23 @@ function addPostToPage(post) {
     const postContent = document.createElement('p');
     postContent.textContent = post.content;
 
+    if (isAdmin) {
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Edit';
+        editButton.addEventListener('click', function() {
+            editPost(post);
+        });
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', function() {
+            deletePost(post.id);
+        });
+
+        postContainer.appendChild(editButton);
+        postContainer.appendChild(deleteButton);
+    }
+
     const commentButton = document.createElement('button');
     commentButton.textContent = 'Show Comments';
     commentButton.addEventListener('click', function() {
@@ -308,6 +328,56 @@ function addPostToPage(post) {
     postContainer.appendChild(commentSection);
 
     document.getElementById('posts').appendChild(postContainer);
+}
+
+function editPost(post) {
+    const newTitle = prompt('Enter new title:', post.title);
+    const newContent = prompt('Enter new content:', post.content);
+
+    if (newTitle !== null && newContent !== null) {
+        fetch(`/api/posts/${post.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title: newTitle, content: newContent })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Post updated successfully') {
+                alert('Post updated successfully');
+                loadPosts();
+            } else {
+                alert('Failed to update post');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating post:', error);
+        });
+    }
+}
+
+function deletePost(postId) {
+    if (confirm('Are you sure you want to delete this post?')) {
+        fetch(`/api/posts/${postId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Post deleted successfully') {
+                alert('Post deleted successfully');
+                loadPosts();
+            } else {
+                alert('Failed to delete post');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting post:', error);
+        });
+    }
 }
 
 function toggleComments(postId, button) {
