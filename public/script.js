@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    checkAuthStatus();
     document.getElementById('homeLink').addEventListener('click', showHome);
     document.getElementById('loginLink').addEventListener('click', showLoginForm);
     document.getElementById('registerLink').addEventListener('click', showRegisterForm);
@@ -11,10 +12,45 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     document.getElementById('blogForm').addEventListener('submit', handleNewPost);
 
+    document.getElementById('exportDataButton').addEventListener('click', handleExportData);
+    document.getElementById('importDataButton').addEventListener('click', handleImportData);
+
     loadPosts();
 });
 
 let isAuthenticated = false;
+
+function checkAuthStatus() {
+    fetch('/api/checkAuth', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.isAuthenticated) {
+            isAuthenticated = true;
+            document.getElementById('loginLink').style.display = 'none';
+            document.getElementById('registerLink').style.display = 'none';
+            document.getElementById('logoutLink').style.display = 'block';
+            document.getElementById('newPostButton').style.display = 'block';
+            if (data.username === 'admin') {
+                document.getElementById('adminActions').style.display = 'block';
+            }
+        } else {
+            isAuthenticated = false;
+            document.getElementById('loginLink').style.display = 'block';
+            document.getElementById('registerLink').style.display = 'block';
+            document.getElementById('logoutLink').style.display = 'none';
+            document.getElementById('newPostButton').style.display = 'none';
+            document.getElementById('adminActions').style.display = 'none';
+        }
+    })
+    .catch(error => {
+        console.error('Error checking auth status:', error);
+    });
+}
 
 function showHome() {
     document.getElementById('authForms').style.display = 'none';
@@ -53,6 +89,10 @@ function handleLogin(event) {
             document.getElementById('loginLink').style.display = 'none';
             document.getElementById('registerLink').style.display = 'none';
             document.getElementById('logoutLink').style.display = 'block';
+            document.getElementById('newPostButton').style.display = 'block';
+            if (username === 'admin') {
+                document.getElementById('adminActions').style.display = 'block';
+            }
             showHome();
         } else {
             alert('Login failed');
@@ -104,6 +144,8 @@ function handleLogout(event) {
             document.getElementById('loginLink').style.display = 'block';
             document.getElementById('registerLink').style.display = 'block';
             document.getElementById('logoutLink').style.display = 'none';
+            document.getElementById('newPostButton').style.display = 'none';
+            document.getElementById('adminActions').style.display = 'none';
             showHome();
         } else {
             alert('Logout failed');
@@ -138,6 +180,51 @@ function handleNewPost(event) {
     })
     .catch(error => {
         console.error('Error saving post:', error);
+    });
+}
+
+function handleExportData(event) {
+    event.preventDefault();
+
+    fetch('/api/export', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Data exported successfully') {
+            alert('Data exported successfully');
+        } else {
+            alert('Failed to export data');
+        }
+    })
+    .catch(error => {
+        console.error('Error exporting data:', error);
+    });
+}
+
+function handleImportData(event) {
+    event.preventDefault();
+
+    fetch('/api/import', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Data imported successfully') {
+            alert('Data imported successfully');
+            loadPosts();
+        } else {
+            alert('Failed to import data');
+        }
+    })
+    .catch(error => {
+        console.error('Error importing data:', error);
     });
 }
 
