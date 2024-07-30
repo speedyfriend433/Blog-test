@@ -29,7 +29,7 @@ document.getElementById('blogForm').addEventListener('submit', function(e) {
 });
 
 function savePost(post) {
-    fetch('http://localhost:3000/api/posts', {
+    fetch('/api/posts', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -46,7 +46,7 @@ function savePost(post) {
 }
 
 function loadPosts() {
-    fetch('http://localhost:3000/api/posts')
+    fetch('/api/posts')
     .then(response => response.json())
     .then(posts => {
         posts.forEach(post => {
