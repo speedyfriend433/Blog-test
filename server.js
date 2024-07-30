@@ -9,11 +9,14 @@ const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const app = express();
 const port = process.env.PORT || 3000;
 const SECRET_KEY = 'your_secret_key'; 
+
+
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: path.join(__dirname, 'database.sqlite'),
   logging: false
 });
+
 
 const User = sequelize.define('User', {
   username: {
@@ -67,7 +70,6 @@ const Comment = sequelize.define('Comment', {
   }
 });
 
-
 const sessionStore = new SequelizeStore({
   db: sequelize
 });
@@ -77,7 +79,10 @@ app.use(session({
   store: sessionStore,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 180 * 60 * 1000 } 
+  cookie: {
+    maxAge: 180 * 60 * 1000, 
+    secure: false 
+  }
 }));
 
 sessionStore.sync();
@@ -89,6 +94,7 @@ sequelize.sync()
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
+
 app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -117,6 +123,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+
 app.post('/api/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
@@ -125,6 +132,7 @@ app.post('/api/logout', (req, res) => {
     res.json({ message: 'Logout successful' });
   });
 });
+
 
 const authenticate = (req, res, next) => {
   if (!req.session.userId) {
@@ -144,12 +152,12 @@ app.get('/api/posts', async (req, res) => {
 
 app.post('/api/posts', authenticate, async (req, res) => {
   const { title, content } = req.body;
-  const username = req.session.userId;
+  const userId = req.session.userId;
   const currentDate = new Date();
   const timeString = currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString();
 
   try {
-    const user = await User.findByPk(req.session.userId);
+    const user = await User.findByPk(userId);
     const newPost = await Post.create({
       username: user.username,
       title,
@@ -174,12 +182,12 @@ app.get('/api/comments/:postId', async (req, res) => {
 
 app.post('/api/comments', authenticate, async (req, res) => {
   const { postId, content } = req.body;
-  const username = req.session.userId;
+  const userId = req.session.userId;
   const currentDate = new Date();
   const timeString = currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString();
 
   try {
-    const user = await User.findByPk(req.session.userId);
+    const user = await User.findByPk(userId);
     const newComment = await Comment.create({
       postId,
       username: user.username,
