@@ -113,7 +113,11 @@ function addPostToPage(post) {
         commentForm.reset();
     });
 
+    var commentList = document.createElement('div');
+    commentList.className = 'comment-list';
+
     commentSection.appendChild(commentForm);
+    commentSection.appendChild(commentList);
 
     postContainer.appendChild(postTitle);
     postContainer.appendChild(postTime);
@@ -130,7 +134,7 @@ function toggleComments(postId, button) {
     if (commentSection.style.display === 'none') {
         commentSection.style.display = 'block';
         button.textContent = 'Close Comments';
-        loadComments(postId, commentSection);
+        loadComments(postId, commentSection.querySelector('.comment-list'));
     } else {
         commentSection.style.display = 'none';
         button.textContent = 'Show Comments';
@@ -154,14 +158,13 @@ function saveComment(comment) {
     });
 }
 
-function loadComments(postId, commentSection) {
+function loadComments(postId, commentList) {
     fetch(`/api/comments/${postId}`)
     .then(response => response.json())
     .then(comments => {
-        commentSection.innerHTML = '';
-        commentSection.appendChild(commentSection.firstElementChild); // 댓글 작성 폼 유지
+        commentList.innerHTML = ''; // Clear existing comments
         comments.forEach(comment => {
-            addCommentToPage(comment, commentSection);
+            addCommentToPage(comment, commentList);
         });
     })
     .catch(error => {
@@ -169,7 +172,7 @@ function loadComments(postId, commentSection) {
     });
 }
 
-function addCommentToPage(comment, commentSection) {
+function addCommentToPage(comment, commentList) {
     var commentContainer = document.createElement('div');
     commentContainer.className = 'comment';
 
@@ -189,5 +192,5 @@ function addCommentToPage(comment, commentSection) {
     commentContainer.appendChild(commentTime);
     commentContainer.appendChild(commentContent);
 
-    commentSection.appendChild(commentContainer);
+    commentList.appendChild(commentContainer);
 }
