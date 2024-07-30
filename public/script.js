@@ -1,44 +1,140 @@
 document.addEventListener('DOMContentLoaded', function() {
-    loadPosts();
+    document.getElementById('homeLink').addEventListener('click', showHome);
+    document.getElementById('loginLink').addEventListener('click', showLoginForm);
+    document.getElementById('registerLink').addEventListener('click', showRegisterForm);
+    document.getElementById('logoutLink').addEventListener('click', handleLogout);
+
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    document.getElementById('registerForm').addEventListener('submit', handleRegister);
     document.getElementById('newPostButton').addEventListener('click', function() {
         document.getElementById('blogForm').style.display = 'block';
     });
+    document.getElementById('blogForm').addEventListener('submit', handleNewPost);
+
+    loadPosts();
 });
 
-document.getElementById('blogForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    var username = document.getElementById('username').value || 'undefined';
-    var title = document.getElementById('title').value;
-    var content = document.getElementById('content').value;
-    var currentDate = new Date();
-    var timeString = currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString();
+let isAuthenticated = false;
 
-    var post = {
-        username: username,
-        title: title,
-        content: content,
-        time: timeString
-    };
+function showHome() {
+    document.getElementById('authForms').style.display = 'none';
+    document.getElementById('newPostButton').style.display = isAuthenticated ? 'block' : 'none';
+    loadPosts();
+}
 
-    savePost(post);
-    addPostToPage(post);
+function showLoginForm() {
+    document.getElementById('authForms').style.display = 'block';
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('registerForm').style.display = 'none';
+}
 
-    document.getElementById('blogForm').reset();
-    document.getElementById('blogForm').style.display = 'none';
-});
+function showRegisterForm() {
+    document.getElementById('authForms').style.display = 'block';
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+}
 
-function savePost(post) {
+function handleLogin(event) {
+    event.preventDefault();
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+
+    fetch('/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Login successful') {
+            isAuthenticated = true;
+            document.getElementById('loginLink').style.display = 'none';
+            document.getElementById('registerLink').style.display = 'none';
+            document.getElementById('logoutLink').style.display = 'block';
+            showHome();
+        } else {
+            alert('Login failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error logging in:', error);
+    });
+}
+
+function handleRegister(event) {
+    event.preventDefault();
+    const username = document.getElementById('registerUsername').value;
+    const password = document.getElementById('registerPassword').value;
+
+    fetch('/api/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('Registration successful');
+            showLoginForm();
+        } else {
+            alert('Registration failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error registering:', error);
+    });
+}
+
+function handleLogout(event) {
+    event.preventDefault();
+
+    fetch('/api/logout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Logout successful') {
+            isAuthenticated = false;
+            document.getElementById('loginLink').style.display = 'block';
+            document.getElementById('registerLink').style.display = 'block';
+            document.getElementById('logoutLink').style.display = 'none';
+            showHome();
+        } else {
+            alert('Logout failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error logging out:', error);
+    });
+}
+
+function handleNewPost(event) {
+    event.preventDefault();
+    const title = document.getElementById('title').value;
+    const content = document.getElementById('content').value;
+
     fetch('/api/posts', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(post)
+        body: JSON.stringify({ title, content })
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Post saved:', data);
+        if (data.error) {
+            alert('Failed to save post');
+        } else {
+            addPostToPage(data);
+            document.getElementById('blogForm').reset();
+            document.getElementById('blogForm').style.display = 'none';
+        }
     })
     .catch(error => {
         console.error('Error saving post:', error);
@@ -49,6 +145,8 @@ function loadPosts() {
     fetch('/api/posts')
     .then(response => response.json())
     .then(posts => {
+        const postsContainer = document.getElementById('posts');
+        postsContainer.innerHTML = '';
         posts.forEach(post => {
             addPostToPage(post);
         });
@@ -59,61 +157,57 @@ function loadPosts() {
 }
 
 function addPostToPage(post) {
-    var postContainer = document.createElement('div');
+    const postContainer = document.createElement('div');
     postContainer.className = 'post';
 
-    var postTitle = document.createElement('h2');
+    const postTitle = document.createElement('h2');
     postTitle.textContent = post.title;
 
-    var postTime = document.createElement('p');
+    const postTime = document.createElement('p');
     postTime.className = 'time';
     postTime.textContent = 'Posted on ' + post.time;
 
-    var postAuthor = document.createElement('p');
+    const postAuthor = document.createElement('p');
     postAuthor.className = 'author';
     postAuthor.textContent = 'Author: ' + post.username;
 
-    var postContent = document.createElement('p');
+    const postContent = document.createElement('p');
     postContent.textContent = post.content;
 
-    var commentButton = document.createElement('button');
+    const commentButton = document.createElement('button');
     commentButton.textContent = 'Show Comments';
     commentButton.addEventListener('click', function() {
         toggleComments(post.id, commentButton);
     });
 
-    var commentSection = document.createElement('div');
+    const commentSection = document.createElement('div');
     commentSection.className = 'comment-section';
+    commentSection.setAttribute('data-post-id', post.id);
     commentSection.style.display = 'none';
 
-    var commentForm = document.createElement('form');
+    const commentForm = document.createElement('form');
     commentForm.innerHTML = `
         <input type="hidden" name="postId" value="${post.id}">
-        <input type="text" id="commentUsername-${post.id}" placeholder="Username" required>
         <textarea id="commentContent-${post.id}" placeholder="Comment" rows="3" required></textarea>
         <button type="submit">Add Comment</button>
     `;
     commentForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        var username = document.getElementById(`commentUsername-${post.id}`).value || 'undefined';
-        var content = document.getElementById(`commentContent-${post.id}`).value;
-        var currentDate = new Date();
-        var timeString = currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString();
+        const content = document.getElementById(`commentContent-${post.id}`).value;
+        const currentDate = new Date();
+        const timeString = currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString();
 
-        var comment = {
+        const comment = {
             postId: post.id,
-            username: username,
-            content: content,
+            content,
             time: timeString
         };
 
-        saveComment(comment);
-        addCommentToPage(comment, commentSection);
-
+        saveComment(comment, commentSection);
         commentForm.reset();
     });
 
-    var commentList = document.createElement('div');
+    const commentList = document.createElement('div');
     commentList.className = 'comment-list';
 
     commentSection.appendChild(commentForm);
@@ -130,7 +224,7 @@ function addPostToPage(post) {
 }
 
 function toggleComments(postId, button) {
-    var commentSection = button.nextElementSibling;
+    const commentSection = button.nextElementSibling;
     if (commentSection.style.display === 'none') {
         commentSection.style.display = 'block';
         button.textContent = 'Close Comments';
@@ -141,7 +235,7 @@ function toggleComments(postId, button) {
     }
 }
 
-function saveComment(comment) {
+function saveComment(comment, commentSection) {
     fetch('/api/comments', {
         method: 'POST',
         headers: {
@@ -151,7 +245,11 @@ function saveComment(comment) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Comment saved:', data);
+        if (data.error) {
+            alert('Failed to save comment');
+        } else {
+            addCommentToPage(data, commentSection.querySelector('.comment-list'));
+        }
     })
     .catch(error => {
         console.error('Error saving comment:', error);
@@ -162,7 +260,7 @@ function loadComments(postId, commentList) {
     fetch(`/api/comments/${postId}`)
     .then(response => response.json())
     .then(comments => {
-        commentList.innerHTML = ''; // Clear existing comments
+        commentList.innerHTML = '';
         comments.forEach(comment => {
             addCommentToPage(comment, commentList);
         });
@@ -173,18 +271,18 @@ function loadComments(postId, commentList) {
 }
 
 function addCommentToPage(comment, commentList) {
-    var commentContainer = document.createElement('div');
+    const commentContainer = document.createElement('div');
     commentContainer.className = 'comment';
 
-    var commentUsername = document.createElement('p');
+    const commentUsername = document.createElement('p');
     commentUsername.className = 'username';
     commentUsername.textContent = 'Username: ' + comment.username;
 
-    var commentTime = document.createElement('p');
+    const commentTime = document.createElement('p');
     commentTime.className = 'time';
     commentTime.textContent = 'Posted on ' + comment.time;
 
-    var commentContent = document.createElement('p');
+    const commentContent = document.createElement('p');
     commentContent.className = 'content';
     commentContent.textContent = comment.content;
 
