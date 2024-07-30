@@ -7,10 +7,16 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.17.1",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "connect-session-sequelize": "^7.1.2",
     "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "path": "^0.12.7",
     "sequelize": "^6.6.5",
-    "sqlite3": "^5.0.0"
+    "sqlite3": "^5.0.0",
+    "ws": "^7.4.5",
+    "dotenv": "^10.0.0"
   }
 }
