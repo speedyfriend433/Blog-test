@@ -79,41 +79,63 @@ function addPostToPage(post) {
     var commentButton = document.createElement('button');
     commentButton.textContent = 'Show Comments';
     commentButton.addEventListener('click', function() {
-        loadComments(post.id);
-        document.getElementById('commentForm').style.display = 'block';
-        document.getElementById('postId').value = post.id;
+        toggleComments(post.id, commentButton);
     });
+
+    var commentSection = document.createElement('div');
+    commentSection.className = 'comment-section';
+    commentSection.style.display = 'none';
+
+    var commentForm = document.createElement('form');
+    commentForm.innerHTML = `
+        <input type="hidden" name="postId" value="${post.id}">
+        <input type="text" id="commentUsername-${post.id}" placeholder="Username" required>
+        <textarea id="commentContent-${post.id}" placeholder="Comment" rows="3" required></textarea>
+        <button type="submit">Add Comment</button>
+    `;
+    commentForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var username = document.getElementById(`commentUsername-${post.id}`).value || 'undefined';
+        var content = document.getElementById(`commentContent-${post.id}`).value;
+        var currentDate = new Date();
+        var timeString = currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString();
+
+        var comment = {
+            postId: post.id,
+            username: username,
+            content: content,
+            time: timeString
+        };
+
+        saveComment(comment);
+        addCommentToPage(comment, commentSection);
+
+        commentForm.reset();
+    });
+
+    commentSection.appendChild(commentForm);
 
     postContainer.appendChild(postTitle);
     postContainer.appendChild(postTime);
     postContainer.appendChild(postAuthor);
     postContainer.appendChild(postContent);
     postContainer.appendChild(commentButton);
+    postContainer.appendChild(commentSection);
 
     document.getElementById('posts').appendChild(postContainer);
 }
 
-document.getElementById('commentForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    var postId = document.getElementById('postId').value;
-    var username = document.getElementById('commentUsername').value || 'undefined';
-    var content = document.getElementById('commentContent').value;
-    var currentDate = new Date();
-    var timeString = currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString();
-
-    var comment = {
-        postId: postId,
-        username: username,
-        content: content,
-        time: timeString
-    };
-
-    saveComment(comment);
-    addCommentToPage(comment);
-
-    document.getElementById('commentForm').reset();
-});
+function toggleComments(postId, button) {
+    var commentSection = button.nextElementSibling;
+    if (commentSection.style.display === 'none') {
+        commentSection.style.display = 'block';
+        button.textContent = 'Close Comments';
+        loadComments(postId, commentSection);
+    } else {
+        commentSection.style.display = 'none';
+        button.textContent = 'Show Comments';
+    }
+}
 
 function saveComment(comment) {
     fetch('/api/comments', {
@@ -121,7 +143,8 @@ function saveComment(comment) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(comment)    })
+        body: JSON.stringify(comment)
+    })
     .then(response => response.json())
     .then(data => {
         console.log('Comment saved:', data);
@@ -131,13 +154,14 @@ function saveComment(comment) {
     });
 }
 
-function loadComments(postId) {
+function loadComments(postId, commentSection) {
     fetch(`/api/comments/${postId}`)
     .then(response => response.json())
     .then(comments => {
-        document.getElementById('comments').innerHTML = '';
+        commentSection.innerHTML = '';
+        commentSection.appendChild(commentSection.firstElementChild); // 댓글 작성 폼 유지
         comments.forEach(comment => {
-            addCommentToPage(comment);
+            addCommentToPage(comment, commentSection);
         });
     })
     .catch(error => {
@@ -145,7 +169,7 @@ function loadComments(postId) {
     });
 }
 
-function addCommentToPage(comment) {
+function addCommentToPage(comment, commentSection) {
     var commentContainer = document.createElement('div');
     commentContainer.className = 'comment';
 
@@ -165,5 +189,5 @@ function addCommentToPage(comment) {
     commentContainer.appendChild(commentTime);
     commentContainer.appendChild(commentContent);
 
-    document.getElementById('comments').appendChild(commentContainer);
+    commentSection.appendChild(commentContainer);
 }
