@@ -20,8 +20,8 @@ This is a simple blog application built with Node.js, Express, and SQLite. Users
 1. Clone the repository
 
 ```sh
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/speedyfriend433/blog-test.git
+cd blog-test
 ```
 
 2. Install dependencies
