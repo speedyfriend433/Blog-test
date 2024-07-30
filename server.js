@@ -6,17 +6,16 @@ const bcrypt = require('bcryptjs');
 const path = require('path');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
+const fs = require('fs');
+
 const app = express();
 const port = process.env.PORT || 3000;
 const SECRET_KEY = 'your_secret_key'; 
-
-
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: path.join(__dirname, 'database.sqlite'),
   logging: false
 });
-
 
 const User = sequelize.define('User', {
   username: {
@@ -70,6 +69,7 @@ const Comment = sequelize.define('Comment', {
   }
 });
 
+
 const sessionStore = new SequelizeStore({
   db: sequelize
 });
@@ -94,7 +94,6 @@ sequelize.sync()
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
-
 app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -117,12 +116,12 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
     req.session.userId = user.id;
+    req.session.username = user.username;
     res.json({ message: 'Login successful' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to login' });
   }
 });
-
 
 app.post('/api/logout', (req, res) => {
   req.session.destroy(err => {
@@ -133,10 +132,16 @@ app.post('/api/logout', (req, res) => {
   });
 });
 
-
 const authenticate = (req, res, next) => {
   if (!req.session.userId) {
     return res.status(401).json({ error: 'Access denied' });
+  }
+  next();
+};
+
+const adminAuthenticate = (req, res, next) => {
+  if (req.session.username !== 'admin') {
+    return res.status(403).json({ error: 'Access denied' });
   }
   next();
 };
@@ -197,6 +202,42 @@ app.post('/api/comments', authenticate, async (req, res) => {
     res.status(201).json(newComment);
   } catch (error) {
     res.status(500).json({ error: 'Failed to save comment' });
+  }
+});
+
+app.get('/api/export', authenticate, adminAuthenticate, async (req, res) => {
+  try {
+    const users = await User.findAll();
+    const posts = await Post.findAll();
+    const comments = await Comment.findAll();
+
+    const data = {
+      users,
+      posts,
+      comments
+    };
+
+    fs.writeFileSync('exported_data.json', JSON.stringify(data, null, 2), 'utf-8');
+    res.json({ message: 'Data exported successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to export data' });
+  }
+});
+
+app.post('/api/import', authenticate, adminAuthenticate, async (req, res) => {
+  try {
+    const data = JSON.parse(fs.readFileSync('exported_data.json', 'utf-8'));
+
+    await User.destroy({ where: {}, truncate: true });
+    await Post.destroy({ where: {}, truncate: true });
+    await Comment.destroy({ where: {}, truncate: true });
+    await User.bulkCreate(data.users);
+    await Post.bulkCreate(data.posts);
+    await Comment.bulkCreate(data.comments);
+
+    res.json({ message: 'Data imported successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to import data' });
   }
 });
 
