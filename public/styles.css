@@ -37,6 +37,18 @@ nav a {
     color: #888;
     font-size: 0.9em;
 }
+.comment .username {
+    font-weight: bold;
+}
+.comment .time {
+    color: #888;
+    font-size: 0.9em;
+}
+.comment-section {
+    margin-top: 1em;
+    padding-top: 1em;
+    border-top: 1px solid #ddd;
+}
 footer {
     background-color: #333;
     color: #fff;
@@ -77,11 +89,3 @@ form button {
     border: 1px solid #ddd;
     background-color: #f9f9f9;
 }
-.comment .username {
-    font-weight: bold;
-}
-.comment .time {
-    color: #888;
-    font-size: 0.9em;
-}
-
