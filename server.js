@@ -7,7 +7,6 @@ const path = require('path');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const fs = require('fs');
-
 const app = express();
 const port = process.env.PORT || 3000;
 const SECRET_KEY = 'your_secret_key'; 
@@ -105,6 +104,14 @@ app.post('/api/register', async (req, res) => {
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to register user' });
+  }
+});
+
+app.get('/api/checkAuth', (req, res) => {
+  if (req.session.userId) {
+    res.json({ isAuthenticated: true, username: req.session.username });
+  } else {
+    res.json({ isAuthenticated: false });
   }
 });
 
