@@ -24,8 +24,16 @@
             <button type="submit">Add Post</button>
         </form>
         <div id="posts">
-            <!-- Posts will be loaded here -->
         </div>
+        <!-- comment write -->
+        <form id="commentForm" style="display: none;">
+            <input type="hidden" id="postId">
+            <input type="text" id="commentUsername" placeholder="Username" required>
+            <textarea id="commentContent" placeholder="Comment" rows="3" required></textarea>
+            <button type="submit">Add Comment</button>
+        </form>
+        <!-- comment -->
+        <div id="comments"></div>
     </div>
     <footer>
         &copy; 2024 My Blog. All rights reserved.
