@@ -7,53 +7,77 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Welcome to My Blog</h1>
-    </header>
-    <nav>
-        <a href="#" id="homeLink">Home</a>
-        <a href="#" id="loginLink">Login</a>
-        <a href="#" id="registerLink">Register</a>
-        <a href="#" id="logoutLink" style="display: none;">Logout</a>
-    </nav>
-    <div class="container">
-        <div id="authForms">
-            <form id="loginForm" style="display: none;">
-                <h2>Login</h2>
-                <input type="text" id="loginUsername" placeholder="Username" required>
-                <input type="password" id="loginPassword" placeholder="Password" required>
-                <button type="submit">Login</button>
-            </form>
-            <form id="registerForm" style="display: none;">
-                <h2>Register</h2>
-                <input type="text" id="registerUsername" placeholder="Username" required>
-                <input type="password" id="registerPassword" placeholder="Password" required>
-                <button type="submit">Register</button>
-            </form>
+    <div class="grid min-h-screen w-full overflow-hidden lg:grid-cols-[280px_1fr]">
+        <div class="hidden border-r bg-gradient-to-b from-white to-gray-200 shadow-lg lg:block">
+            <div class="flex flex-col gap-2">
+                <div class="flex h-[60px] items-center px-6">
+                    <a class="flex items-center gap-2 font-semibold" href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+                            <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"></path>
+                            <path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9"></path>
+                            <path d="M12 3v6"></path>
+                        </svg>
+                        <span>My Blog</span>
+                    </a>
+                </div>
+                <div class="flex-1">
+                    <nav class="grid items-start px-4 text-sm font-medium">
+                        <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 shadow-md" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                            Home
+                        </a>
+                        <a class="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 shadow-md" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                <circle cx="8" cy="21" r="1"></circle>
+                                <circle cx="19" cy="21" r="1"></circle>
+                                <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
+                            </svg>
+                            Posts
+                        </a>
+                    </nav>
+                </div>
+            </div>
         </div>
-        <button id="newPostButton" style="display: none;">New Post</button>
-        <form id="blogForm" style="display: none;">
-            <input type="text" id="title" placeholder="Title" required>
-            <textarea id="content" placeholder="Content" rows="5" required></textarea>
-            <button type="submit">Add Post</button>
-        </form>
-        <div id="adminActions" style="display: none;">
-            <button id="exportDataButton">Export Data</button>
-            <button id="importDataButton">Import Data</button>
+        <div class="flex flex-col">
+            <header class="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gradient-to-b from-white to-gray-200 shadow-lg px-6">
+                <a class="lg:hidden" href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+                        <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"></path>
+                        <path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9"></path>
+                        <path d="M12 3v6"></path>
+                    </svg>
+                    <span class="sr-only">Home</span>
+                </a>
+                <div class="flex-1">
+                    <h1 class="font-semibold text-lg">Posts</h1>
+                </div>
+                <div class="flex flex-1 items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+                    <form class="ml-auto flex-1 sm:flex-initial">
+                        <div class="relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.3-4.3"></path>
+                            </svg>
+                            <input class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]" type="search" placeholder="Search posts..." />
+                        </div>
+                    </form>
+                </div>
+            </header>
+            <main class="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+                <button id="newPostButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">New Post</button>
+                <form id="blogForm" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 hidden">
+                    <input type="text" id="title" placeholder="Title" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4" required>
+                    <textarea id="content" placeholder="Content" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4" rows="5" required></textarea>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Post</button>
+                </form>
+                <div id="posts" class="space-y-4">
+                </div>
+            </main>
         </div>
-        <div id="posts">
-        </div>
-        <form id="commentForm" style="display: none;">
-            <input type="hidden" id="postId">
-            <input type="text" id="commentUsername" placeholder="Username" required>
-            <textarea id="commentContent" placeholder="Comment" rows="3" required></textarea>
-            <button type="submit">Add Comment</button>
-        </form>
-        <div id="comments"></div>
     </div>
-    <footer>
-        &copy; 2024 My Blog. All rights reserved.
-    </footer>
     <script src="script.js"></script>
 </body>
 </html>
