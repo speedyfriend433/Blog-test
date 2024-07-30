@@ -7,9 +7,11 @@ const path = require('path');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const fs = require('fs');
+
 const app = express();
 const port = process.env.PORT || 3000;
 const SECRET_KEY = 'your_secret_key'; 
+
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: path.join(__dirname, 'database.sqlite'),
@@ -68,7 +70,6 @@ const Comment = sequelize.define('Comment', {
   }
 });
 
-
 const sessionStore = new SequelizeStore({
   db: sequelize
 });
@@ -93,6 +94,7 @@ sequelize.sync()
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
+
 app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -104,14 +106,6 @@ app.post('/api/register', async (req, res) => {
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to register user' });
-  }
-});
-
-app.get('/api/checkAuth', (req, res) => {
-  if (req.session.userId) {
-    res.json({ isAuthenticated: true, username: req.session.username });
-  } else {
-    res.json({ isAuthenticated: false });
   }
 });
 
@@ -182,6 +176,42 @@ app.post('/api/posts', authenticate, async (req, res) => {
   }
 });
 
+app.put('/api/posts/:id', authenticate, adminAuthenticate, async (req, res) => {
+  const postId = req.params.id;
+  const { title, content } = req.body;
+
+  try {
+    const post = await Post.findByPk(postId);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    post.title = title;
+    post.content = content;
+    await post.save();
+
+    res.json({ message: 'Post updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update post' });
+  }
+});
+
+app.delete('/api/posts/:id', authenticate, adminAuthenticate, async (req, res) => {
+  const postId = req.params.id;
+
+  try {
+    const post = await Post.findByPk(postId);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    await post.destroy();
+    res.json({ message: 'Post deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete post' });
+  }
+});
+
 app.get('/api/comments/:postId', async (req, res) => {
   const postId = req.params.postId;
   try {
@@ -238,6 +268,7 @@ app.post('/api/import', authenticate, adminAuthenticate, async (req, res) => {
     await User.destroy({ where: {}, truncate: true });
     await Post.destroy({ where: {}, truncate: true });
     await Comment.destroy({ where: {}, truncate: true });
+
     await User.bulkCreate(data.users);
     await Post.bulkCreate(data.posts);
     await Comment.bulkCreate(data.comments);
@@ -248,6 +279,14 @@ app.post('/api/import', authenticate, adminAuthenticate, async (req, res) => {
   }
 });
 
+app.get('/api/checkAuth', (req, res) => {
+if (req.session.userId) {
+res.json({ isAuthenticated: true, username: req.session.username });
+} else {
+res.json({ isAuthenticated: false });
+}
+});
+
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+console.log(Server is running on port ${port});
 });
