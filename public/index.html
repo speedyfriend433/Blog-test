@@ -37,7 +37,12 @@
             <textarea id="content" placeholder="Content" rows="5" required></textarea>
             <button type="submit">Add Post</button>
         </form>
+        <div id="adminActions" style="display: none;">
+            <button id="exportDataButton">Export Data</button>
+            <button id="importDataButton">Import Data</button>
+        </div>
         <div id="posts">
+            <!-- Posts will be loaded here -->
         </div>
         <form id="commentForm" style="display: none;">
             <input type="hidden" id="postId">
