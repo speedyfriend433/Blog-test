@@ -71,3 +71,17 @@ form button {
     cursor: pointer;
     margin-bottom: 1em;
 }
+.comment {
+    margin-bottom: 1em;
+    padding: 0.5em;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+.comment .username {
+    font-weight: bold;
+}
+.comment .time {
+    color: #888;
+    font-size: 0.9em;
+}
+
