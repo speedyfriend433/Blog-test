@@ -164,7 +164,9 @@ function handleLogout(event) {
 function handleNewPost(event) {
     event.preventDefault();
     const title = document.getElementById('title').value;
-    const content = document.getElementById('content').value;    fetch('/api/posts', {
+    const content = document.getElementById('content').value;
+
+    fetch('/api/posts', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -248,30 +250,34 @@ function loadPosts() {
 
 function addPostToPage(post) {
     const postContainer = document.createElement('div');
-    postContainer.className = 'post';
+    postContainer.className = 'post bg-white shadow-md rounded-lg p-4';
 
     const postTitle = document.createElement('h2');
+    postTitle.className = 'text-lg font-bold';
     postTitle.textContent = post.title;
 
     const postTime = document.createElement('p');
-    postTime.className = 'time';
+    postTime.className = 'text-sm text-gray-500';
     postTime.textContent = 'Posted on ' + post.time;
 
     const postAuthor = document.createElement('p');
-    postAuthor.className = 'author';
+    postAuthor.className = 'text-sm text-gray-500';
     postAuthor.textContent = 'Author: ' + post.username;
 
     const postContent = document.createElement('p');
+    postContent.className = 'mt-2';
     postContent.textContent = post.content;
 
     if (isAdmin) {
         const editButton = document.createElement('button');
+        editButton.className = 'bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2';
         editButton.textContent = 'Edit';
         editButton.addEventListener('click', function() {
             editPost(post);
         });
 
         const deleteButton = document.createElement('button');
+        deleteButton.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded';
         deleteButton.textContent = 'Delete';
         deleteButton.addEventListener('click', function() {
             deletePost(post.id);
@@ -282,21 +288,22 @@ function addPostToPage(post) {
     }
 
     const commentButton = document.createElement('button');
+    commentButton.className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2';
     commentButton.textContent = 'Show Comments';
     commentButton.addEventListener('click', function() {
         toggleComments(post.id, commentButton);
     });
 
     const commentSection = document.createElement('div');
-    commentSection.className = 'comment-section';
+    commentSection.className = 'comment-section mt-4';
     commentSection.setAttribute('data-post-id', post.id);
     commentSection.style.display = 'none';
 
     const commentForm = document.createElement('form');
     commentForm.innerHTML = `
         <input type="hidden" name="postId" value="${post.id}">
-        <textarea id="commentContent-${post.id}" placeholder="Comment" rows="3" required></textarea>
-        <button type="submit">Add Comment</button>
+        <textarea id="commentContent-${post.id}" placeholder="Comment" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2" rows="3" required></textarea>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Comment</button>
     `;
     commentForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -315,7 +322,7 @@ function addPostToPage(post) {
     });
 
     const commentList = document.createElement('div');
-    commentList.className = 'comment-list';
+    commentList.className = 'comment-list mt-2';
 
     commentSection.appendChild(commentForm);
     commentSection.appendChild(commentList);
@@ -429,18 +436,18 @@ function loadComments(postId, commentList) {
 
 function addCommentToPage(comment, commentList) {
     const commentContainer = document.createElement('div');
-    commentContainer.className = 'comment';
+    commentContainer.className = 'comment bg-gray-100 p-2 rounded-md mt-2';
 
     const commentUsername = document.createElement('p');
-    commentUsername.className = 'username';
+    commentUsername.className = 'text-sm font-semibold';
     commentUsername.textContent = 'Username: ' + comment.username;
 
     const commentTime = document.createElement('p');
-    commentTime.className = 'time';
+    commentTime.className = 'text-xs text-gray-500';
     commentTime.textContent = 'Posted on ' + comment.time;
 
     const commentContent = document.createElement('p');
-    commentContent.className = 'content';
+    commentContent.className = 'mt-1';
     commentContent.textContent = comment.content;
 
     commentContainer.appendChild(commentUsername);
