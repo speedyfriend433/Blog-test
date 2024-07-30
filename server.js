@@ -6,10 +6,9 @@ const bcrypt = require('bcryptjs');
 const path = require('path');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
-require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
-const SECRET_KEY = process.env.SECRET_KEY;
+const SECRET_KEY = 'your_secret_key'; 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: path.join(__dirname, 'database.sqlite'),
@@ -67,6 +66,7 @@ const Comment = sequelize.define('Comment', {
     allowNull: false
   }
 });
+
 
 const sessionStore = new SequelizeStore({
   db: sequelize
