@@ -29,6 +29,26 @@ const Post = sequelize.define('Post', {
   }
 });
 
+const Comment = sequelize.define('Comment', {
+  postId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'undefined'
+  },
+  content: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  time: {
+    type: DataTypes.STRING,
+    allowNull: false
+  }
+});
+
 sequelize.sync()
   .then(() => console.log('Database synced'))
   .catch(err => console.error('Failed to sync database:', err));
@@ -59,6 +79,32 @@ app.post('/api/posts', async (req, res) => {
     res.status(201).json(newPost);
   } catch (error) {
     res.status(500).json({ error: 'Failed to save post' });
+  }
+});
+
+app.get('/api/comments/:postId', async (req, res) => {
+  const postId = req.params.postId;
+  try {
+    const comments = await Comment.findAll({ where: { postId } });
+    res.json(comments);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to load comments' });
+  }
+});
+
+app.post('/api/comments', async (req, res) => {
+  const { postId, username, content, time } = req.body;
+
+  try {
+    const newComment = await Comment.create({
+      postId,
+      username,
+      content,
+      time
+    });
+    res.status(201).json(newComment);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to save comment' });
   }
 });
 
