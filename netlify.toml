@@ -1,6 +1,6 @@
 [build]
   command = "yarn install"
-  publish = "build"
+  publish = ""
 [build.environment]
   NODE_VERSION = "18"
   YARN_VERSION = "1.22.19"
