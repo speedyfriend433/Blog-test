@@ -1,13 +1,12 @@
-build:
-     command: yarn install
-     commandOrigin: config
-     environment:
-       - NODE_VERSION
-       - YARN_VERSION
-     publish: /opt/build/repo/dist
-     publishOrigin: config
-     redirects:
-     - from: /*
-      status: 200
-      to: /index.html
-  redirectsOrigin: config
+[build]
+  command = "yarn install"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "18"
+  YARN_VERSION = "1.22.19"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
