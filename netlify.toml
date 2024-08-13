@@ -1,5 +1,5 @@
 build:
-     command: npm run build
+     command: yarn install
      commandOrigin: config
      environment:
        - NODE_VERSION
