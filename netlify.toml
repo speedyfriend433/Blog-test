@@ -1,5 +1,6 @@
 [build]
-  command = "npm run build"
+  command = "yarn install"
+  publich = ""
   
 [build.environment]
   NODE_VERSION = "18"
